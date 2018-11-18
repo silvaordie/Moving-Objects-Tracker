@@ -15,7 +15,11 @@ function objects = track3D_part1( imgseq1,   cam_params )
     
 objects=zeros(480,640,length(imgseq1.rgb));
     for i=1:length(imgseq1.rgb),
-        imdiff=abs(imgsd(:,:,i)-bgdepth)>.20;
+        imdiff=abs(imgsd(:,:,i)-bgdepth)>.20 ;
+        [gx, gy]=gradient(imgsd(:,:,i));
+        g=(gx.^2+gy.^2).^0.5;
+        imdiff= imdiff - (g > .2);
+        imdiff= imdiff > 0;
         imgdiffiltered=imopen(imdiff,strel('disk',5));
         objects(:,:,i)=bwlabel(imgdiffiltered);
     end
