@@ -11,7 +11,7 @@ function frame = track3D_part1( imgseq1,   cam_params )
         Z=double(depth_array(:)')/1000;
         [v u]=ind2sub([480 640],(1:480*640));
         t=inv(cam_params.Kdepth)*[Z.*u ;Z.*v;Z];
-        xyz(k).coord=reshape(t,[480,640,3]);
+        xyz(k).coord=reshape(t',[480,640,3]);
     end
 
     
@@ -29,7 +29,6 @@ function frame = track3D_part1( imgseq1,   cam_params )
         objects(:,:,k)=bwlabel(imgdiffiltered);
     end
     
-    %%Isto ainda está em pixeis
     siz=size(objects);
     for k=1:siz(3)
         obs=max(max(objects(:,:,k)));
@@ -37,7 +36,7 @@ function frame = track3D_part1( imgseq1,   cam_params )
         for l=1:obs
            [x,y]=find(objects(:,:,k)==l );
 
-           if(length(x)>10)
+           if(length(x)>1000)
                coords=zeros(3,length(x));
                for count=1:1:length(x);
                 coords(:,count)=xyz(k).coord(x(count),y(count),:);

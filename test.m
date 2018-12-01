@@ -30,8 +30,8 @@ for f=1:length(imgseq1.depth)
             scatter3(c(1,:), c(2,:), c(3,:));
         end
     end
-    axis([-10 10 -10 10 0 10]);
-    view([130 45]);
+    axis([-5 5 -5 5 0 5]);
+    view([45 45]);
     xlabel('x');
     ylabel('y');
     zlabel('z');
