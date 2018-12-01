@@ -1,0 +1,16 @@
+function objects=bg_sub(imgsd, imgs)  
+    siz
+    bgdepth=median(imgsd,3);
+    bggray=median(imgs,3);
+    
+    objects=zeros(480,640,length(imgs));
+    for k=1:length(imgs),
+        imdiff=abs(imgsd(:,:,k)-bgdepth)>.20 ;
+        [gx, gy]=gradient(imgsd(:,:,k));
+        g=(gx.^2+gy.^2).^0.5;
+        imdiff= imdiff - (g > .2);
+        imdiff= imdiff > 0;
+        imgdiffiltered=imopen(imdiff,strel('disk',5));
+        objects(:,:,k)=bwlabel(imgdiffiltered);
+    end
+end
