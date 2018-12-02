@@ -8,7 +8,9 @@ imgseq1.rgb=d;
 imgseq1.depth=dd;
 
 frame = track3D_part1( imgseq1,   'cameraparametersAsus.mat' );
- 
+
+
+
 %%
 figure;
 for f=1:length(imgseq1.depth)
@@ -48,14 +50,14 @@ for f=1:length(imgseq1.depth)
             p8(1,1)=frame(f).obj(o).xyz(1,frame(f).obj(o).minx);
             p8(2,1)=frame(f).obj(o).xyz(2,frame(f).obj(o).miny);
             p8(3,1)=frame(f).obj(o).xyz(3,frame(f).obj(o).minz);
-            c=[p1, p2, p3, p4, p5, p6, p7, p8]
+            c=[p1, p2, p3, p4, p5, p6, p7, p8];
 
             scatter3(c(1,:), c(2,:), c(3,:));
         end
     end
-    axis([-6 3 -3 3 0 6]);
+    axis([-10 10 -10 10 0 6]);
     grid on;
-    view([90 0]);
+    view([45 45]);
     xlabel('x');
     ylabel('y');
     zlabel('z');

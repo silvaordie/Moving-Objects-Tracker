@@ -23,14 +23,55 @@ function frame = track3D_part1( imgseq1,   cam_params )
     end
     
     %vert k+1 hor k
-    
-    for k=1:1:length(frame)
+    for cnt=1:1:length(frame(1).obj)
+       frame(1).obj(cnt).label= cnt;
+       frame(1).obj(cnt).start=1;
+       counts(cnt)=1;
+    end    
+    for k=1:1:length(frame)-1
         cost=zeros(length(frame(k+1).obj), length(frame(k).obj));
         siz=size(cost);
         
         for a=1:1:siz(1);
-           for b=1:1:s 
+           for b=1:1:siz(2)
+              cost(a,b)=( (frame(k).obj(b).maxx-frame(k).obj(b).minx) - (frame(k+1).obj(a).maxx-frame(k+1).obj(a).minx))^2;
+           end
         end
+        
+        ass=munkres(cost);
+
+        for cnt=1:1:length(ass)
+           for aux=1:1:length(frame(k).obj)
+              labels(aux)=frame(k).obj(aux).label;
+           end
+           
+           if(ass(cnt)~=0)
+            frame(k+1).obj(cnt).label= frame(k).obj(ass(cnt)).label;
+            counts(frame(k).obj(aux).label)=counts(frame(k).obj(aux).label)+1;
+           else
+            frame(k+1).obj(cnt).label= max(labels)+1;
+            counts(max(labels)+1)=1;
+            labels(aux)=max(labels)+1;
+            aux=aux+1;
+           end
+        end
+    end
+    
+    for k=1:1:length(frame)
+        
+       for o=1:1:length(frame(k).obj)
+           if(counts(frame(k).obj(o).label)>2)
+               if(isnan(OBJ(frame(k).obj(o).label)))
+                  OBJ(frame(k).obj(o).label).start=k; 
+               end
+               
+               OBJ(frame(k).obj(o).label).X(:,k-OBJ(frame(k).obj(o).label).start)=[frame(k).obj(o).maxx*ones(4,1); frame(k).obj(o).minx*ones(4,1)];
+               OBJ(frame(k).obj(o).label).Y(:,k-OBJ(frame(k).obj(o).label).start)=[frame(k).obj(o).maxy*ones(2,1); frame(k).obj(o).miny*ones(2,1); frame(k).obj(o).maxy*ones(2,1); frame(k).obj(o).miny*ones(2,1)];
+               OBJ(frame(k).obj(o).label).Z(:,k-OBJ(frame(k).obj(o).label).start)=[frame(k).obj(o).maxz; frame(k).obj(o).minz;frame(k).obj(o).maxz; frame(k).obj(o).minz;frame(k).obj(o).maxz; frame(k).obj(o).minz;frame(k).obj(o).maxz; frame(k).obj(o).minz];
+                
+           end
+       end
+        
     end
     
 end

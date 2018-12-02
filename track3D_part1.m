@@ -25,6 +25,8 @@ function frame = track3D_part1( imgseq1,   cam_params )
     %vert k+1 hor k
     for cnt=1:1:length(frame(1).obj)
        frame(1).obj(cnt).label= cnt;
+       frame(1).obj(cnt).start=1;
+       counts(cnt)=1;
     end    
     for k=1:1:length(frame)-1
         cost=zeros(length(frame(k+1).obj), length(frame(k).obj));
@@ -40,17 +42,34 @@ function frame = track3D_part1( imgseq1,   cam_params )
 
         for cnt=1:1:length(ass)
            for aux=1:1:length(frame(k).obj)
-              labels(aux)=frame(k).obj(aux).label; 
+              labels(aux)=frame(k).obj(aux).label;
            end
            
            if(ass(cnt)~=0)
             frame(k+1).obj(cnt).label= frame(k).obj(ass(cnt)).label;
+            frame(k+1).obj(cnt).start= frame(k).obj(ass(cnt)).start;
+            counts(frame(k).obj(aux).label)=counts(frame(k).obj(aux).label)+1;
            else
             frame(k+1).obj(cnt).label= max(labels)+1;
+            frame(k+1).obj(cnt).start=k+1;
+            counts(max(labels)+1)=1;
             labels(aux)=max(labels)+1;
             aux=aux+1;
            end
         end
+    end
+    
+    for k=1:1:length(frame)
+        
+       for o=1:1:length(frame(k).obj)
+           if(counts(frame(k).obj(o).label)>2)
+               OBJ(frame(k).obj(o).label).X(:,k-frame(k).obj(o).label.start)=[frame(k).obj(o).maxx*ones(4,1); frame(k).obj(o).minx*ones(4,1)];
+               OBJ(frame(k).obj(o).label).Y(:,k-frame(k).obj(o).label.start)=[frame(k).obj(o).maxy*ones(2,1); frame(k).obj(o).miny*ones(2,1); frame(k).obj(o).maxy*ones(2,1); frame(k).obj(o).miny*ones(2,1)];
+               OBJ(frame(k).obj(o).label).Z(:,k-frame(k).obj(o).label.start)=[frame(k).obj(o).maxz; frame(k).obj(o).minz;frame(k).obj(o).maxz; frame(k).obj(o).minz;frame(k).obj(o).maxz; frame(k).obj(o).minz;frame(k).obj(o).maxz; frame(k).obj(o).minz];
+                
+           end
+       end
+        
     end
     
 end
