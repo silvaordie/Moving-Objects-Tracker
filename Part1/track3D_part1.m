@@ -5,8 +5,8 @@ function OBJ = track3D_part1( imgseq1,   cam_params )
     imgsd=zeros(480,640,length(imgseq1.rgb));
     
     for k=1:length(imgseq1.rgb)
-        imgs(:,:,k)=rgb2gray(imread(imgseq1.rgb(k).name));
-        load(imgseq1.depth(k).name);
+        imgs(:,:,k)=rgb2gray(imread(['filinha\',imgseq1.rgb(k).name]));
+        load(['filinha\',imgseq1.depth(k).name]);
         imgsd(:,:,k)=double(depth_array)/1000;
         
         Z=double(depth_array(:)')/1000;

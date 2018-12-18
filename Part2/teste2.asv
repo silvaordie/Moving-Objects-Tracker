@@ -1,11 +1,11 @@
 %%
 clear;
 run 'vlfeat-0.9.21\toolbox\vl_setup'
-d1=dir('corredor1\rgb_image1*.png');
-dd1=dir('corredor1\depth1*.mat');
+d1=dir('data_rgb\rgb_image1*.png');
+dd1=dir('data_rgb\depth1*.mat');
 
-d2=dir('corredor1\rgb_image2*.png');
-dd2=dir('corredor1\depth2*.mat');
+d2=dir('data_rgb\rgb_image2*.png');
+dd2=dir('data_rgb\depth2*.mat');
 
 load cameraparametersAsus.mat
 
@@ -16,8 +16,8 @@ imgseq2.rgb=d2;
 imgseq2.depth=dd2;
 clear d1 dd1 d2 dd2 
 for k=1:length(imgseq1.rgb)      
-        [fa, da] = vl_sift(single(rgb2gray(imread(['corredor1\', imgseq1.rgb(k).name])))) ;
-        [fb, db] = vl_sift(single(rgb2gray(imread(['corredor1\', imgseq1.rgb(k).name])))) ;
+        [fa, da] = vl_sift(single(rgb2gray(imread(['data_rgb\', imgseq1.rgb(k).name])))) ;
+        [fb, db] = vl_sift(single(rgb2gray(imread(['data_rgb\', imgseq1.rgb(k).name])))) ;
         [m, s] = vl_ubcmatch(da, db) ;
         ms(1,k)=length(m);
 end
@@ -29,15 +29,15 @@ end
 idx=0;
 for k=ind(1:3)
 
-    Ia=single(rgb2gray(imread(['corredor1\', imgseq1.rgb(k).name]))) ;
-    Ib=single(rgb2gray(imread(['corredor1\', imgseq2.rgb(k).name]))) ;   
+    Ia=single(rgb2gray(imread(['data_rgb\', imgseq1.rgb(k).name]))) ;
+    Ib=single(rgb2gray(imread(['data_rgb\', imgseq2.rgb(k).name]))) ;   
     
-    load(['corredor1\', imgseq1.depth(k).name]);
+    load(['data_rgb\', imgseq1.depth(k).name]);
     Z=double(depth_array(:)')/1000;
     [v u]=ind2sub([480 640],(1:480*640));
     xyz1=(inv(cam_params.Kdepth)*[Z.*u ;Z.*v;Z]);
     
-    load(['corredor1\', imgseq2.depth(k).name]);
+    load(['data_rgb\', imgseq2.depth(k).name]);
     Z=double(depth_array(:)')/1000;
     [v u]=ind2sub([480 640],(1:480*640));
     xyz2=(inv(cam_params.Kdepth)*[Z.*u ;Z.*v;Z]);    
@@ -65,9 +65,11 @@ for k=ind(1:3)
        [v1 idx1]=min(err1);
        [v2 idx2]=min(err2);
        
-       if(v1<0.35 && v2<0.35)
+       if(v1<1 && v2<1)
             matches(1:3,idx+i-fail)=xyz1(:,idx1);
             matches(4:6,idx+i-fail)=xyz2(:,idx2);
+            v1
+            v2
        else
            fail=fail+1;
        end
@@ -78,7 +80,7 @@ end
 niter=100;
 aux=fix(rand(4*niter,1)*length(matches))+1;
 numinliers=[];
-th=0.35;
+th=0.3;
 for k=0:1:niter-5
     P=matches(1:3, aux( (4*k+1):(4*k+4) ));
     P2=matches(4:6, aux( (4*k+1):(4*k+4) ));
@@ -99,17 +101,17 @@ points2=matches(4:6,inliers);
 
 [ ~,~, transf ]=procrustes( points1' , points2' , 'scaling', false, 'reflection', false );
 
-load(['corredor1\', imgseq1.depth(1).name]);
+load(['data_rgb\', imgseq1.depth(1).name]);
 Z=double(depth_array(:)')/1000;
 [v u]=ind2sub([480 640],(1:480*640));
 xyz1=(inv(cam_params.Kdepth)*[Z.*u ;Z.*v;Z]);
 
-load(['corredor1\', imgseq2.depth(1).name]);
+load(['data_rgb\', imgseq2.depth(1).name]);
 Z=double(depth_array(:)')/1000;
 [v u]=ind2sub([480 640],(1:480*640));
 xyz2=(inv(cam_params.Kdepth)*[Z.*u ;Z.*v;Z]);   
 
-xyz2=[transf.T transf.c(1,:)']*[xyz2; ones(1,length(xyz2))];
+xyz2=[transf.T' transf.c(1,:)']*[xyz2; ones(1,length(xyz2))];
 
 
 pc1=pointCloud(xyz1');
