@@ -9,8 +9,6 @@ function f = max_xyz(objects, xyz)
            for count=1:1:length(x);
             coords(:,count)=xyz.coord(x(count),y(count),:);
            end
-           f.obj(cnt).xyz=coords;
-
            f.obj(cnt).maxx=max(coords(1,:));
            f.obj(cnt).maxy=max(coords(2,:));
            f.obj(cnt).maxz=max(coords(3,:));
@@ -22,4 +20,8 @@ function f = max_xyz(objects, xyz)
            cnt=cnt+1;
        end
     end 
+    
+    if(obs==0 || cnt==1)
+       f.obj=nan; 
+    end
 end
