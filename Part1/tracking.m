@@ -1,8 +1,8 @@
 function  frame=tracking(imgseq1, cam_params, camtoW)  
 
     for k=1:length(imgseq1.rgb)
-        imgs(k).rgb=imread([imgseq1.rgb(k).name]);
-        load([imgseq1.depth(k).name]);
+        imgs(k).rgb=imread(imgseq1.rgb(k).name);
+        load(imgseq1.depth(k).name);
         imgsd(:,:,k)=double(depth_array)/1000;
         
         Z=double(depth_array(:)')/1000;

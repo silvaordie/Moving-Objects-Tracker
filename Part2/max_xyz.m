@@ -3,7 +3,7 @@ function f = max_xyz(objects, xyz)
             cnt=1;
     for l=1:obs
        [x,y]=find(objects(:,:)==l );
-
+       indices=reshape(objects, 1, 480*640;)
        if(length(x)>1000)
            coords=zeros(3,length(x));
            for count=1:1:length(x);

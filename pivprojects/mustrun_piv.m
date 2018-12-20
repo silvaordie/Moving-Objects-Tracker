@@ -30,7 +30,7 @@
 %d2=dir([rambase2 '/*.jpg']);
 %d3=dir([trainseq '/*.jpg']);
 %% -- IMAGE DATASET, LIST OF FILES
-base_data_dir='C:\Users\jpc\Downloads\lab1\lab1\';
+base_data_dir='E:\jfsil\Documents\IST\4ºAno\1ºSemestre\Image and Computer Vision\Proj-PIV\pivprojects\data_rgb';
 d1=dir([base_data_dir 'depth1*']);
 d2=dir([base_data_dir 'depth2*']);
 r1=dir([base_data_dir 'rgb_image1_*']);
@@ -62,7 +62,7 @@ try,%%%IF possible run in parallel
             cd([basedir '\' projs(i).name]);
             fprintf('running project %s \n',pwd);
             if exist('track3D_part2.m'),
-                corre='[objects, cam1toW, cam2toW] = track3D_part2( im1, im2,   cam_params);';
+                corre='[objects, cam2toW] = track3D_part2( im1, im2,   cam_params);';
                 try,
                     %YOUR CODE MUST RUN THIS PART
                     h=tic;
@@ -72,8 +72,7 @@ try,%%%IF possible run in parallel
                     fprintf(' Run ok \n');
                     texto=[texto [{projs(i).name};{sprintf('OK - Correu ate ao fim em - %d Segundos',tt)}]];
                     out{1}=objects;
-                    out{2}=cam1toW;
-                    out{3}=cam2toW;
+                    out{2}=cam2toW;
                     caminho=[caminho out];
                 catch erro,
                     texto=[texto [{projs(i).name};{sprintf('ERRO - %s  ',erro.message)}]];
@@ -108,10 +107,8 @@ for i=1:size(texto,2),
                objsinframe(j,obj(j).frames_tracked(k))=1;
            end
        end
-       R1=caminho{2,i}.R;
-       T1=caminho{2,i}.T;
-       R2=caminho{3,i}.R;
-       T3=caminho{3,i}.T;       
+       R2=caminho{2,i}.R;
+       T3=caminho{2,i}.T;       
        for j=1:length(im1),           
            load(im1(j).depth);
            xyz1=get_xyzasus(depth_array(:),[480 640],(1:640*480)', cam_params.Kdepth,1,0);
